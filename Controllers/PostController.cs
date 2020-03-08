@@ -15,7 +15,7 @@ namespace RestApi.Controllers
     {
         private readonly PostContext _context;
 
-        public PostController(PostContext context)
+        public PostController(PostContext context, CommentContext commentCon)
         {
             _context = context;
         }
@@ -24,7 +24,22 @@ namespace RestApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Post>>> GetPosts()
         {
-            return await _context.Posts.ToListAsync();
+            var getpost =  await _context.Posts.ToListAsync();
+
+            return Ok(new {data = getpost});
+        }
+
+        [HttpGet("getall")]
+        public ActionResult GetAll()
+        {
+            // using (var context = new PostContext(options))
+            // {
+
+                var post1 = _context.Posts.Include("Comments").ToList();
+                
+            // }
+
+            return Ok(post1);
         }
 
         // GET: api/Post/5

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace RestApi.Models
 {
@@ -8,5 +9,6 @@ namespace RestApi.Models
         { }
 
         public DbSet<Comment> Comments {get;set;}
+        public ICollection<Post> postsc {get;set;}
     }
 }

@@ -13,25 +13,42 @@ namespace RestApi.Controllers
     [ApiController]
     public class CommentController : ControllerBase
     {
-        private readonly CommentContext _context;
+        private readonly CommentContext _commcontext;
+        private readonly PostContext _postcontext;
 
-        public CommentController(CommentContext context)
+        public CommentController(CommentContext context, PostContext postcontext)
         {
-            _context = context;
+            _commcontext = context;
+            _postcontext = postcontext;
         }
 
         // GET: api/Comment
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Comment>>> GetComments()
         {
-            return await _context.Comments.ToListAsync();
+            return await _commcontext.Comments.ToListAsync();
+        }
+
+        [HttpGet("getall/{id}")]
+        public ActionResult getAll(int id)
+        {
+            var p = _postcontext.Posts.FirstOrDefault(a => a.postId == id);
+            var comm = _commcontext.Comments.FirstOrDefault(a => a.postId == id);
+
+            var content = new {
+                Post = p,
+                comments = comm
+            };
+
+            return Ok(content);
+
         }
 
         // GET: api/Comment/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Comment>> GetComment(int id)
         {
-            var comment = await _context.Comments.FindAsync(id);
+            var comment = await _commcontext.Comments.FindAsync(id);
 
             if (comment == null)
             {
@@ -52,11 +69,11 @@ namespace RestApi.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(comment).State = EntityState.Modified;
+            _commcontext.Entry(comment).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _commcontext.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -79,8 +96,8 @@ namespace RestApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Comment>> PostComment(Comment comment)
         {
-            _context.Comments.Add(comment);
-            await _context.SaveChangesAsync();
+            _commcontext.Comments.Add(comment);
+            await _commcontext.SaveChangesAsync();
 
             return CreatedAtAction("GetComment", new { id = comment.commentId }, comment);
         }
@@ -89,21 +106,21 @@ namespace RestApi.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Comment>> DeleteComment(int id)
         {
-            var comment = await _context.Comments.FindAsync(id);
+            var comment = await _commcontext.Comments.FindAsync(id);
             if (comment == null)
             {
                 return NotFound();
             }
 
-            _context.Comments.Remove(comment);
-            await _context.SaveChangesAsync();
+            _commcontext.Comments.Remove(comment);
+            await _commcontext.SaveChangesAsync();
 
             return comment;
         }
 
         private bool CommentExists(int id)
         {
-            return _context.Comments.Any(e => e.commentId == id);
+            return _commcontext.Comments.Any(e => e.commentId == id);
         }
     }
 }

@@ -9,6 +9,8 @@ namespace RestApi.Models
         [Required]
         public string commentBody {get;set;}
         [Required]
-        public int postId {get;set;}    
+        public int postId {get;set;}
+        public Post post {get;set;}
+
     }
 }

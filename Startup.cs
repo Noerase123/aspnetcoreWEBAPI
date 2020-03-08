@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using RestApi.Models;
+using RestApi.services;
 
 namespace RestApi
 {
@@ -31,6 +32,8 @@ namespace RestApi
             services.AddDbContext<CommentContext>(opt => opt.UseSqlServer(connString));
             services.AddDbContext<FollowerContext>(opt => opt.UseSqlServer(connString));
             services.AddControllers();
+
+            services.AddSingleton<ProductService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
